@@ -1,9 +1,9 @@
 extends KinematicBody2D
 
 const SPEED = 200
+const INTERVAL = .3
 var velocity = Vector2()
 var shoot_model = preload("res://scenes/Shoot.tscn")
-var interval = .3
 var last_shoot = 0
 
 func _physics_process(delta):
@@ -33,10 +33,13 @@ func get_input():
 func shoot_prepare(delta):
 	if Input.is_action_pressed("shoot"):
 		if last_shoot <= 0:
-			var shoot = shoot_model.instance()
-			shoot.position = Vector2(global_position.x, global_position.y)
-			get_node("../").add_child(shoot)
-			last_shoot = interval
+			var cannon_left_position = get_node("Position_cannon_left")
+			var cannon_right_position = get_node("Position_cannon_right")
+			
+			shoot_insert(cannon_left_position)
+			shoot_insert(cannon_right_position)
+
+			last_shoot = INTERVAL
 			pass
 		pass
 	
@@ -44,3 +47,12 @@ func shoot_prepare(delta):
 		last_shoot -= delta
 		pass
 	pass
+
+func shoot_insert(cannon_position):
+	var shoot = shoot_model.instance()
+	
+	shoot.position = Vector2(
+		cannon_position.global_position.x,
+		cannon_position.global_position.y
+	)
+	owner.add_child(shoot)
